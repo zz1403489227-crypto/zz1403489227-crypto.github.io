@@ -132,7 +132,7 @@ footer{padding:28px 0 48px;color:var(--faint);font-size:12.5px;border-top:1px so
 </section>
 </main>
 
-<footer class="wrap">仿真平台 UniVTAC · 基座 openpi π0.5 · M0–M1 每任务评测 10 回合，M2 起 20 回合 · 最后更新 2026-11-02</footer>
+<footer class="wrap">仿真平台 UniVTAC · 基座 openpi π0.5 · M0–M1 每任务评测 10 回合，M2 起 20 回合 · 最后更新 2026-11-03</footer>
 
 <script>
 const TASKS=[["lift_can","提罐"],["lift_bottle","提瓶"],["insert_hole","插孔"],["insert_HDMI","插 HDMI"],["insert_tube","插试管"],["pull_out_key","拔钥匙"],["grasp_classify","抓取分类"],["put_bottle_in_shelf","瓶子上架"]];
@@ -154,10 +154,10 @@ const GENS=[
   summary:"让路由器真正起作用：路由输入先做 RMS 归一化，logits 放大 10 倍。",
   cfg:{adapter:"HydraLoRA K=4",ae:"HydraLoRA K=4",H:50,router:"token 路由 + 归一化"},changed:["router"],
   delta:[["up","拔钥匙 10% → 70%，插孔 65%，均为目前最好。"],["down","路由仍没有按任务分工，各任务的门控差异很小。"]]},
- {id:"m3",tag:"M3",name:"负载均衡",date:"2026-11-02",pending:true,
-  summary:"给路由器加批内负载均衡损失，让不同样本分散到不同专家，避免所有样本挤在同一个专家上。",
-  cfg:{adapter:"HydraLoRA K=4",ae:"HydraLoRA K=4",H:50,router:"路由 + 负载均衡"},changed:["router"],
-  delta:[["eq","训练中，预计 11-03 出评测结果。"]]}
+ {id:"m3",tag:"M3",name:"负载均衡",date:"2026-11-03",n:20,s:[0,19,13,7,11,16,20,1],
+  summary:"路由改为样本级：用相机、语言和触觉的池化特征为每个样本算一组门控；再加批内负载均衡损失，让不同样本分散到不同专家。",
+  cfg:{adapter:"HydraLoRA K=4",ae:"HydraLoRA K=4",H:50,router:"样本路由 + 负载均衡"},changed:["router"],
+  delta:[["up","首次超过普通 LoRA 基线：插 HDMI 15% → 35%，插试管 20% → 55%，提瓶 95%。"],["up","路由第一次按任务分工：同一任务稳定选同一个专家，8 个任务平均用到 3.8 个专家（M2 同类设置只用 1 个）。"],["down","去掉触觉路由输入只差 2 回合，触觉的作用还没分离出来；瓶子上架降到 5%。"]]}
 ];
 const pct=g=>g.s.reduce((a,b)=>a+b,0)/(g.s.length*g.n)*100;
 const done=GENS.filter(g=>!g.pending);
